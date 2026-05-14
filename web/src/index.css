@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body {
+    background: #F4EFE5;
+    color: #1F1B16;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.005em;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(rgba(31,27,22,0.025) 1px, transparent 1px);
+    background-size: 4px 4px;
+    z-index: 0;
+  }
+}
+
+@layer components {
+  .editable {
+    @apply bg-transparent border-none outline-none w-full p-0 transition-colors;
+  }
+  .editable:focus {
+    @apply bg-paper-deep px-2 py-1 -mx-2 -my-1 rounded;
+  }
+}
+

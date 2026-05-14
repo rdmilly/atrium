@@ -1,0 +1,1 @@
+.env\ndata/postgres/\n*.log\n__pycache__/\nvenv/\nweb/node_modules/

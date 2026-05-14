@@ -1,0 +1,81 @@
+services:
+  atrium-postgres:
+    image: postgres:16-alpine
+    container_name: atrium-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: atrium
+      POSTGRES_PASSWORD: ${ATRIUM_DB_PASSWORD}
+      POSTGRES_DB: atrium
+    volumes:
+      - atrium-postgres-data:/var/lib/postgresql/data
+    networks:
+      - default
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U atrium -d atrium"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  atrium:
+    build: ./service
+    image: millyweb/atrium:latest
+    container_name: atrium
+    restart: unless-stopped
+    depends_on:
+      atrium-postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://atrium:${ATRIUM_DB_PASSWORD}@atrium-postgres:5432/atrium
+      API_TOKEN: ${ATRIUM_API_TOKEN}
+      MCP_TOKEN: ${ATRIUM_MCP_TOKEN}
+      FORGE_ENABLED: "false"
+      FORGE_URL: ${FORGE_URL:-https://forge.millyweb.com}
+      LOG_LEVEL: INFO
+    networks:
+      - coolify
+      - default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=coolify"
+      - "traefik.http.routers.atrium-api.entrypoints=https"
+      - "traefik.http.routers.atrium-api.rule=Host(`atrium.millyweb.com`) && (PathPrefix(`/api`) || PathPrefix(`/mcp`) || PathPrefix(`/ws`) || PathPrefix(`/p`))"
+      - "traefik.http.routers.atrium-api.tls=true"
+      - "traefik.http.routers.atrium-api.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.atrium-api.priority=10"
+      - "traefik.http.services.atrium-api.loadbalancer.server.port=9080"
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:9080/api/v1/health').read()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  atrium-web:
+    image: nginx:alpine
+    container_name: atrium-web
+    restart: unless-stopped
+    volumes:
+      - ./web/dist:/usr/share/nginx/html:ro
+      - ./web/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - coolify
+      - default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=coolify"
+      - "traefik.http.routers.atrium-web.entrypoints=https"
+      - "traefik.http.routers.atrium-web.rule=Host(`atrium.millyweb.com`)"
+      - "traefik.http.routers.atrium-web.tls=true"
+      - "traefik.http.routers.atrium-web.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.atrium-web.priority=1"
+      - "traefik.http.services.atrium-web.loadbalancer.server.port=80"
+
+volumes:
+  atrium-postgres-data:
+
+networks:
+  coolify:
+    external: true
+  default:
+    driver: bridge
+

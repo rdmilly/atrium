@@ -110,7 +110,7 @@
 </div>
 <script>
 const DATA = {
-  meta:{ version:"phase-0.5.6 · blue/green live", img:"handoff-fix4-20260628 (live)", updated:"2026-06-28" },
+  meta:{ version:"phase-0.5.6 · blue/green live", img:"confirmgate-20260628 (live)", updated:"2026-06-28" },
   kpis:[
     {l:"Phase 1 (infra/data/ops)", v:"Complete", c:"ok"},
     {l:"Blue/green deploy", v:"Live + proven", c:"ok"},
@@ -130,7 +130,7 @@ const DATA = {
     {t:"Living roadmap dashboard online", s:"done", w:"roadmap.millyweb.com", p:"", e:"", why:"This page — served on vps2 behind Traefik, regenerated each session."},
     {t:"Staging-gate startup-synth FIXED (live)", s:"done", w:"WP-1.4", p:"", e:"S", why:"LIVE safetybugs-20260628: startup synth gated behind CONTROLLER_ROLE!=staging; a passive controller no longer dispatches host.exec or writes handoff on boot."},
     {t:"HandoffSynthesizer FIXED (live)", s:"done", w:"WP-1.7", p:"", e:"S", why:"LIVE safetybugs-20260628: writes handoff.auto.md instead of clobbering the curated handoff.md. Continuity preserved."},
-    {t:"confirm-gate is substring-matched", s:"bug", w:"WP-0.2", p:"P1", e:"S", why:"'docker rm' / 'rm -rf' / 'reboot' inside benign strings trip the gate. Replace with a parsed command intent / allowlist."},
+    {t:"confirm-gate false-positives FIXED (live)", s:"done", w:"WP-0.2", p:"", e:"S", why:"LIVE confirmgate-20260628: rm-family downgraded only for provably-safe /tmp,/var/tmp,/dev/shm or ./relative targets (no expansion/glob); all other patterns untouched. Tested 10 benign allowed / 24 dangerous still blocked."},
     {t:"BUG-022 cache invalidation", s:"bug", w:"WP-1.5", p:"P1", e:"S", why:"Lifecycle cache not invalidated correctly on recreate."},
     {t:"Reconciler diffs image only", s:"partial", w:"WP-1.1", p:"P0", e:"M", why:"Drift reconcile ignores env/volumes/networks — root cause of the workdocs drift. Also the second half of the declarative-reconcile vision."},
     {t:"tool-router / tool-executor", s:"partial", w:"WP-4.1", p:"P1", e:"M", why:"Real per-agent MCP routing + MCP-level dispatch; today it's the proxy."},

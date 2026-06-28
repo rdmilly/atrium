@@ -110,13 +110,13 @@
 </div>
 <script>
 const DATA = {
-  meta:{ version:"phase-0.5.6 · blue/green live", img:"promoting bluegreen-20260627", updated:"2026-06-28" },
+  meta:{ version:"phase-0.5.6 · blue/green live", img:"safetybugs-20260628 (live)", updated:"2026-06-28" },
   kpis:[
     {l:"Phase 1 (infra/data/ops)", v:"Complete", c:"ok"},
     {l:"Blue/green deploy", v:"Live + proven", c:"ok"},
     {l:"atrium", v:"Deployed", c:"ok"},
-    {l:"Controller promote", v:"In progress", c:"warn"},
-    {l:"Safety bugs open", v:"3", c:"warn"},
+    {l:"Controller promote", v:"safetybugs live", c:"ok"},
+    {l:"Safety bugs open", v:"2 P1 + ACME", c:"warn"},
     {l:"Registration pipeline", v:"PRD approved — build starting", c:"info"},
   ],
   decisions:[
@@ -128,8 +128,8 @@ const DATA = {
     {t:"Blue/green deploy engine", s:"done", w:"deploy-compose.sh", p:"", e:"", why:"General gate-then-cutover for Traefik/compose services. Clone-env green-gate, force-recreate, verify, auto-rollback. Proven live on atrium. Commits e83ff85 / b2302cb."},
     {t:"blue_green dispatch wired", s:"done", w:"deployer_descriptors.go", p:"", e:"", why:"deployBlueGreen() drives the engine; atrium descriptor corrected. Controller image bluegreen-20260627 built + promoting."},
     {t:"Living roadmap dashboard online", s:"done", w:"roadmap.millyweb.com", p:"", e:"", why:"This page — served on vps2 behind Traefik, regenerated each session."},
-    {t:"Staging-role gate leaks side effects", s:"bug", w:"WP-1.4", p:"P0", e:"S", why:"A passive/staging controller dispatched host.exec + wrote a handoff — contributed to the 12-day workdocs drift. A passive node must have zero side effects. FIRST build step."},
-    {t:"HandoffSynthesizer broken", s:"bug", w:"WP-1.7", p:"P0", e:"S", why:"Overwrites curated handoff.md every ~30m and doesn't read the journal store, so session continuity is dead. Point it at the journal source; stop clobbering. FIRST build step."},
+    {t:"Staging-gate startup-synth FIXED (live)", s:"done", w:"WP-1.4", p:"", e:"S", why:"LIVE safetybugs-20260628: startup synth gated behind CONTROLLER_ROLE!=staging; a passive controller no longer dispatches host.exec or writes handoff on boot."},
+    {t:"HandoffSynthesizer FIXED (live)", s:"done", w:"WP-1.7", p:"", e:"S", why:"LIVE safetybugs-20260628: writes handoff.auto.md instead of clobbering the curated handoff.md. Continuity preserved."},
     {t:"confirm-gate is substring-matched", s:"bug", w:"WP-0.2", p:"P1", e:"S", why:"'docker rm' / 'rm -rf' / 'reboot' inside benign strings trip the gate. Replace with a parsed command intent / allowlist."},
     {t:"BUG-022 cache invalidation", s:"bug", w:"WP-1.5", p:"P1", e:"S", why:"Lifecycle cache not invalidated correctly on recreate."},
     {t:"Reconciler diffs image only", s:"partial", w:"WP-1.1", p:"P0", e:"M", why:"Drift reconcile ignores env/volumes/networks — root cause of the workdocs drift. Also the second half of the declarative-reconcile vision."},

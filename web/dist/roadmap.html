@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Mesh Controller · Living Roadmap</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#151b24; --panel2:#1b232e; --line:#26303d;
+    --ink:#e6edf3; --dim:#8b98a8; --faint:#5d6b7a;
+    --accent:#d98a5b; --accent2:#5bc0d9;
+    --done:#3fb950; --prog:#d29922; --pend:#58a6ff; --bug:#f85149; --idea:#bc8cff; --part:#db9e3f;
+    --p0:#f85149; --p1:#d98a5b; --p2:#5bc0d9; --p3:#8b98a8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 70% -10%,#16202c 0,var(--bg) 60%);
+       color:var(--ink);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  code,.mono{font-family:ui-monospace,"Cascadia Code","Roboto Mono",Menlo,Consolas,monospace}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 22px 80px}
+  header{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:14px;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:22px}
+  h1{margin:0;font-size:22px;letter-spacing:.2px;font-weight:650}
+  h1 .sub{display:block;font-size:12.5px;color:var(--dim);font-weight:400;margin-top:4px}
+  .stamp{font-size:12px;color:var(--dim);text-align:right}
+  .stamp b{color:var(--accent2)}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:26px}
+  .kpi{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:12px;padding:14px 15px}
+  .kpi .v{font-size:18px;font-weight:650;margin-top:2px}
+  .kpi .l{font-size:11.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.6px}
+  .kpi.ok .v{color:var(--done)} .kpi.warn .v{color:var(--prog)} .kpi.info .v{color:var(--pend)}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:1.1px;color:var(--accent);margin:30px 0 12px;font-weight:650}
+  h2 .c{color:var(--faint);font-weight:400;text-transform:none;letter-spacing:0}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+  .controls input{background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:7px 11px;min-width:200px;font-size:13px}
+  .chip{background:var(--panel);border:1px solid var(--line);color:var(--dim);border-radius:20px;padding:5px 12px;font-size:12px;cursor:pointer;user-select:none}
+  .chip.active{background:var(--accent);border-color:var(--accent);color:#1a1009;font-weight:600}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:13px}
+  .card{background:var(--panel);border:1px solid var(--line);border-left-width:3px;border-radius:11px;padding:13px 14px;transition:.15s}
+  .card:hover{border-color:#34404f;transform:translateY(-1px)}
+  .card .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+  .card h3{margin:0;font-size:14px;font-weight:600;line-height:1.35}
+  .card p{margin:7px 0 0;color:var(--dim);font-size:12.5px}
+  .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center}
+  .pill{font-size:10.5px;font-weight:700;letter-spacing:.4px;padding:2px 7px;border-radius:6px;text-transform:uppercase}
+  .st-done{background:rgba(63,185,80,.14);color:var(--done)} .st-in_progress{background:rgba(210,153,34,.15);color:var(--prog)}
+  .st-pending{background:rgba(88,166,255,.14);color:var(--pend)} .st-designed{background:rgba(139,152,168,.14);color:var(--dim)}
+  .st-partial{background:rgba(219,158,63,.14);color:var(--part)} .st-bug{background:rgba(248,81,73,.15);color:var(--bug)}
+  .st-idea{background:rgba(188,140,255,.15);color:var(--idea)}
+  .wp{font-size:10.5px;color:var(--faint);border:1px solid var(--line);border-radius:6px;padding:2px 6px}
+  .pri{font-size:10.5px;font-weight:700;padding:2px 6px;border-radius:6px}
+  .pri-P0{background:rgba(248,81,73,.16);color:var(--p0)} .pri-P1{background:rgba(217,138,91,.16);color:var(--p1)}
+  .pri-P2{background:rgba(91,192,217,.14);color:var(--p2)} .pri-P3{background:rgba(139,152,168,.12);color:var(--p3)}
+  .eff{font-size:10.5px;color:var(--dim)}
+  .b-done{border-left-color:var(--done)} .b-in_progress{border-left-color:var(--prog)} .b-pending{border-left-color:var(--pend)}
+  .b-designed{border-left-color:var(--faint)} .b-partial{border-left-color:var(--part)} .b-bug{border-left-color:var(--bug)} .b-idea{border-left-color:var(--idea)}
+  .decision{background:linear-gradient(180deg,#1c2530,#171f29);border:1px solid #2c3a2c;border-left:3px solid var(--accent);border-radius:11px;padding:14px 15px;margin-bottom:11px}
+  .decision h3{margin:0 0 5px;font-size:14px}
+  .decision p{margin:0;color:var(--dim);font-size:12.5px}
+  .decision .opts{margin-top:9px;display:flex;gap:7px;flex-wrap:wrap}
+  .decision .opt{font-size:11.5px;background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:4px 9px;color:var(--ink)}
+  .headline{background:linear-gradient(110deg,#241a12,#15202a);border:1px solid #3a2a1c;border-radius:13px;padding:18px 19px;margin-bottom:14px}
+  .headline h3{margin:0 0 6px;font-size:15.5px;color:var(--accent)}
+  .headline p{margin:0;color:#cdd6e0;font-size:13px}
+  .legend{display:flex;gap:13px;flex-wrap:wrap;font-size:11px;color:var(--dim);margin-top:6px}
+  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .dot{width:8px;height:8px;border-radius:50%}
+  footer{margin-top:34px;border-top:1px solid var(--line);padding-top:14px;color:var(--faint);font-size:11.5px}
+  .count{color:var(--faint);font-weight:400;font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Mesh Controller — Living Roadmap
+      <span class="sub">solo-founder control plane · vps1 / vps2 / contabo / clair · mcp.millyweb.com</span>
+    </h1>
+    <div class="stamp">live image <b id="img"></b><br/>updated <b id="upd"></b></div>
+  </header>
+  <div class="kpis" id="kpis"></div>
+  <h2>Awaiting your call <span class="c">— decisions that unblock the next move</span></h2>
+  <div id="decisions"></div>
+  <h2>Headline recommendation</h2>
+  <div class="headline">
+    <h3>Make registration + deploy + drift ONE declarative system</h3>
+    <p>Today registration, blue/green deploy, and drift-detection are three separate mechanisms. The world-class move is a single human-friendly <code>service.yaml</code> per service in git (image · networks · domains · deploy strategy · backups · schedules · tool-consumers). The controller <b>expands</b> it into all 12 manifests <b>and continuously reconciles</b> desired-vs-actual, auto-healing drift. That's Flux/ArgoCD-for-your-Docker-mesh. The registration pipeline we just spec'd is the first half; deepening the reconciler (WP-1.1) is the second. Framing them as one loop is what turns a pile of tools into a platform.</p>
+  </div>
+  <h2>Engineering review <span class="c">— improvements · nice-to-haves · new features</span></h2>
+  <div class="controls">
+    <input id="q" placeholder="filter cards…"/>
+    <span class="chip active" data-f="all">All</span>
+    <span class="chip" data-f="bug">Safety bugs</span>
+    <span class="chip" data-f="in_progress">In progress</span>
+    <span class="chip" data-f="pending">Backlog</span>
+    <span class="chip" data-f="idea">Ideas / new</span>
+    <span class="chip" data-f="done">Shipped</span>
+    <span class="count" id="count"></span>
+  </div>
+  <div class="legend">
+    <span><i class="dot" style="background:var(--done)"></i>done</span>
+    <span><i class="dot" style="background:var(--prog)"></i>in progress</span>
+    <span><i class="dot" style="background:var(--pend)"></i>pending</span>
+    <span><i class="dot" style="background:var(--part)"></i>partial</span>
+    <span><i class="dot" style="background:var(--bug)"></i>bug</span>
+    <span><i class="dot" style="background:var(--idea)"></i>idea</span>
+    <span style="margin-left:auto">priority P0→P3 · effort S/M/L</span>
+  </div>
+  <div class="grid" id="cards" style="margin-top:14px"></div>
+  <footer>
+    Living artifact — regenerated by Claude each working session at <code>roadmap.millyweb.com</code>. Mirrors <code>build-tracker.md</code> + <code>registration-pipeline-v2-prd.md</code> in Working KB. Status truth = Helix journal + controller <code>/api</code>.
+  </footer>
+</div>
+<script>
+const DATA = {
+  meta:{ version:"phase-0.5.6 · blue/green live", img:"promoting bluegreen-20260627", updated:"2026-06-28" },
+  kpis:[
+    {l:"Phase 1 (infra/data/ops)", v:"Complete", c:"ok"},
+    {l:"Blue/green deploy", v:"Live + proven", c:"ok"},
+    {l:"atrium", v:"Deployed", c:"ok"},
+    {l:"Controller promote", v:"In progress", c:"warn"},
+    {l:"Safety bugs open", v:"3", c:"warn"},
+    {l:"Registration pipeline", v:"PRD approved — build starting", c:"info"},
+  ],
+  decisions:[
+    {q:"Build sequence — APPROVED", d:"Bugs-first: fix staging-gate (WP-1.4) + HandoffSynthesizer (WP-1.7), then build registration R-1..R-7 (lean file-based v1).", opts:["In motion"]},
+    {q:"Consumer to MCP access target", d:"For 'add MCP X to services A,B,C' — confirm whether access lives in tool-filter config, policies_manifest.json, or per-OAuth-client. 10-min code check at build time.", opts:["At build"]},
+    {q:"type=project seeds atrium DB?", d:"Unify project truth (atrium reads the manifest) or keep manifest-only in v1.", opts:["Manifest-only (lean)","Unify with atrium"]},
+  ],
+  cards:[
+    {t:"Blue/green deploy engine", s:"done", w:"deploy-compose.sh", p:"", e:"", why:"General gate-then-cutover for Traefik/compose services. Clone-env green-gate, force-recreate, verify, auto-rollback. Proven live on atrium. Commits e83ff85 / b2302cb."},
+    {t:"blue_green dispatch wired", s:"done", w:"deployer_descriptors.go", p:"", e:"", why:"deployBlueGreen() drives the engine; atrium descriptor corrected. Controller image bluegreen-20260627 built + promoting."},
+    {t:"Living roadmap dashboard online", s:"done", w:"roadmap.millyweb.com", p:"", e:"", why:"This page — served on vps2 behind Traefik, regenerated each session."},
+    {t:"Staging-role gate leaks side effects", s:"bug", w:"WP-1.4", p:"P0", e:"S", why:"A passive/staging controller dispatched host.exec + wrote a handoff — contributed to the 12-day workdocs drift. A passive node must have zero side effects. FIRST build step."},
+    {t:"HandoffSynthesizer broken", s:"bug", w:"WP-1.7", p:"P0", e:"S", why:"Overwrites curated handoff.md every ~30m and doesn't read the journal store, so session continuity is dead. Point it at the journal source; stop clobbering. FIRST build step."},
+    {t:"confirm-gate is substring-matched", s:"bug", w:"WP-0.2", p:"P1", e:"S", why:"'docker rm' / 'rm -rf' / 'reboot' inside benign strings trip the gate. Replace with a parsed command intent / allowlist."},
+    {t:"BUG-022 cache invalidation", s:"bug", w:"WP-1.5", p:"P1", e:"S", why:"Lifecycle cache not invalidated correctly on recreate."},
+    {t:"Reconciler diffs image only", s:"partial", w:"WP-1.1", p:"P0", e:"M", why:"Drift reconcile ignores env/volumes/networks — root cause of the workdocs drift. Also the second half of the declarative-reconcile vision."},
+    {t:"tool-router / tool-executor", s:"partial", w:"WP-4.1", p:"P1", e:"M", why:"Real per-agent MCP routing + MCP-level dispatch; today it's the proxy."},
+    {t:"Exponential backoff on lifecycle fails", s:"partial", w:"P5-4", p:"P1", e:"S", why:"Circuit breaker exists; add backoff so crash-loops don't hammer."},
+    {t:"Populate volumes/schedules/credentials manifests", s:"partial", w:"21a-c", p:"P2", e:"S", why:"CRUD exists; manifests thin. Needed for the declarative model to be complete."},
+    {t:"Registration cascade pipeline", s:"pending", w:"PRD v2", p:"P1", e:"L", why:"mesh_register: one payload to all manifests + provisioner + deploy-descriptor + KB. PRD approved; builds after the two safety bugs."},
+    {t:"MigrationOrchestrator", s:"designed", w:"P5-2", p:"P2", e:"M", why:"Coordinate DB schema migrations (expand-contract) as a first-class, gated step — pairs with blue/green for stateful services."},
+    {t:"mTLS controller to agents", s:"designed", w:"D1", p:"P2", e:"M", why:"Encrypt + authenticate the mesh control channel."},
+    {t:"Helix+Controller unified binary", s:"designed", w:"D5", p:"P3", e:"L", why:"Operational simplicity; one process to run."},
+    {t:"Windows agent (Clair/Bertha)", s:"pending", w:"D3/D4", p:"P2", e:"M", why:"Native Go agent: WMI scan stubs + NSSM service so Windows nodes are first-class."},
+    {t:"Phase-6 refactors", s:"pending", w:"WP-2.x", p:"P2", e:"M", why:"Module-owned api_router.go, tool-reg out of the 885-line main.go, structured logging, changelog export."},
+    {t:"ACME cert renewals failing", s:"bug", w:"infra", p:"P0", e:"S", why:"Root domino behind Claude.ai connector drops. Not controller code, but it knocks the controller offline. Fix the renewal loop."},
+    {t:"Cloudflare DNS audit", s:"pending", w:"infra", p:"P2", e:"S", why:"Many millyweb.com A records still point at vps1 for services that moved to vps2."},
+    {t:"Connection draining on cutover", s:"idea", w:"new", p:"P1", e:"S", why:"Descriptor has drain_s but the engine ignores it. Drain in-flight requests before killing blue — removes the only user-facing risk in the blip."},
+    {t:"Deploy by image digest, not latest", s:"idea", w:"new", p:"P1", e:"S", why:"Reproducible deploys + unambiguous rollback. :latest is mutable and hides what's actually running."},
+    {t:"One-call rollback tool", s:"idea", w:"new", p:"P1", e:"S", why:"mesh_rollback(service) reverts to the retained snapshot. The snapshot already exists; just expose the revert."},
+    {t:"Post-cutover watch window + auto-rollback", s:"idea", w:"new", p:"P1", e:"M", why:"Descriptor has rollback.watch_s. Watch health for N minutes after cutover and auto-revert on degradation."},
+    {t:"Gated DB migrations against green", s:"idea", w:"new", p:"P2", e:"M", why:"Optional MIGRATE_CMD run on green before cutover so schema changes are health-gated too. Makes stateful blue/green safe by design."},
+    {t:"Async build+deploy job", s:"idea", w:"new", p:"P2", e:"M", why:"build then mesh_deploy_status polling so BUILD=1 works through the controller without the 115s host-exec timeout."},
+    {t:"Deploy / drift notifications", s:"idea", w:"new", p:"P2", e:"S", why:"Telegram MCP already connected. Ping on deploy / rollback / drift / circuit-break."},
+    {t:"Real-time event bus", s:"idea", w:"event-bus-adr", p:"P2", e:"M", why:"Emit deploy/register/drift/health events; this dashboard + atrium subscribe so it's genuinely live, not poll."},
+    {t:"Synthetic canary self-test", s:"idea", w:"new", p:"P2", e:"M", why:"Periodically auto-deploy a throwaway canary to prove the deploy path stays green; alert if the machinery itself breaks."},
+    {t:"JSON-schema validation on manifest writes", s:"idea", w:"new", p:"P1", e:"S", why:"Validate every manifest entry before the atomic write+commit. Catches bad registrations before they land + commit."},
+    {t:"Progressive delivery (canary %)", s:"idea", w:"new", p:"P3", e:"L", why:"Traefik weighted services / file provider to shift traffic 5 to 100 percent and true zero-downtime."},
+    {t:"Multi-node scheduling", s:"idea", w:"new", p:"P3", e:"L", why:"Controller picks the best node for a new service by live capacity. Turns the mesh into a scheduler."},
+    {t:"Live command-center UI in atrium", s:"idea", w:"new", p:"P2", e:"L", why:"Promote this dashboard into atrium with action buttons (deploy / rollback / promote / heal-drift)."},
+  ]
+};
+const el=(s,r=document)=>r.querySelector(s), ce=(t,c)=>{const e=document.createElement(t);if(c)e.className=c;return e};
+el('#img').textContent=DATA.meta.img; el('#upd').textContent=DATA.meta.updated;
+const kp=el('#kpis'); DATA.kpis.forEach(k=>{const d=ce('div','kpi '+(k.c||''));d.innerHTML=`<div class="l">${k.l}</div><div class="v">${k.v}</div>`;kp.appendChild(d);});
+const dc=el('#decisions'); DATA.decisions.forEach(x=>{const d=ce('div','decision');d.innerHTML=`<h3>${x.q}</h3><p>${x.d}</p><div class="opts">${x.opts.map(o=>`<span class="opt">${o}</span>`).join('')}</div>`;dc.appendChild(d);});
+const cards=el('#cards');
+function render(){
+  const f=window._f||'all', q=(el('#q').value||'').toLowerCase();
+  cards.innerHTML=''; let n=0;
+  DATA.cards.forEach(c=>{
+    if(f!=='all' && c.s!==f) return;
+    if(q && !(c.t+' '+c.why).toLowerCase().includes(q)) return;
+    n++;
+    const d=ce('div','card b-'+c.s);
+    const pri=c.p?`<span class="pri pri-${c.p}">${c.p}</span>`:'';
+    const eff=c.e?`<span class="eff">· ${c.e}</span>`:'';
+    const wp=c.w?`<span class="wp">${c.w}</span>`:'';
+    d.innerHTML=`<div class="top"><h3>${c.t}</h3><span class="pill st-${c.s}">${c.s.replace('_',' ')}</span></div><p>${c.why}</p><div class="tags">${pri}${eff}${wp}</div>`;
+    cards.appendChild(d);
+  });
+  el('#count').textContent=n+' shown';
+}
+document.querySelectorAll('.chip').forEach(ch=>ch.onclick=()=>{
+  document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+  ch.classList.add('active'); window._f=ch.dataset.f; render();
+});
+el('#q').oninput=render; render();
+</script>
+</body>
+</html>
